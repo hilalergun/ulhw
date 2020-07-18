@@ -28,6 +28,8 @@ Application is composed of 2 main classes:
 
 # Building and running the project
 
+> This project can be built on a Docker instance, a Dockerfile is provided for convenience. Please check docker section for details.
+
 Project is developed on Ubuntu 18.04 machine, and it should build on any decent recent Linux distribution.
 
 For building this project you should have libyang and libnetconf2 installed in your system. If these are not present on your package manager, you find prebuilt binaries at [5]. For Ubuntu 18.04, necessary files are present in the source repo and you can install these with the following command from the main repo directory:
@@ -36,10 +38,10 @@ For building this project you should have libyang and libnetconf2 installed in y
 > make install_debs
 ```
 
-Project uses cmake as build system which should be present in any of package managers available. For debian/ubuntu variants one can install it with:
+Project uses cmake as build system which should be present in any of package managers available. For debian/ubuntu variants one can install it with (and other necessary components):
 
 ```bash
-> [sudo] apt-get install cmake
+> [sudo] apt-get install git vim build-essential cmake apt-utils libssh-4 libpcre3-dev libpcre16-3 libpcre32-3 libpcrecpp0v5 libssh-dev libyuma-base
 ```
 
 and then project can be built with following command:
@@ -73,6 +75,36 @@ A setting can be erased like:
 ```
 
 Please note that you cannot delete builtin properties.
+
+## Building with docker
+
+```bash
+> docker build -f Dockerfile.build -t ulhw:latest .
+> docker run -it ulhw:latest
+```
+
+Then we can clone and build the project:
+
+```bash
+> git clone https://github.com/hilalergun/ulhw
+> cd ulhw
+> make install_debs
+> make
+```
+
+Now we can test our application, let's start server in the background:
+
+```bash
+> build/ulhw 1>/dev/null 2>&1 &
+```
+
+Then client should simply work:
+
+```bash
+build/ulhwcli 127.0.0.1 get
+```
+
+
 # References
 
 * [1] https://github.com/CESNET/libnetconf2
