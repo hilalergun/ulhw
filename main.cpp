@@ -1,5 +1,6 @@
 #include "netconfapplication.h"
 #include "loguru/debug.h"
+#include "utils.h"
 
 #include <unistd.h>
 
@@ -10,7 +11,8 @@ int main(int argc, char *argv[])
 	if (var)
 		loguru::g_stderr_verbosity = std::stoi(var);
 
-	if (std::string(argv[0]) == "ulhwcli" || std::string(argv[0]) == "./ulhwcli")
+	auto v = split(std::string(argv[0]), '/', false);
+	if (v.back() == "ulhwcli")
 		return NetconfApplication::instance().initClient(argc, argv);
 
 	gWarn("Initing server: %d", NetconfApplication::instance().initServer());
