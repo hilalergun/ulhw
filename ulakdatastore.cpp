@@ -41,17 +41,17 @@ static int readFile(const std::__cxx11::string &filename,
 
 UlakDataStore::UlakDataStore()
 {
-	storeData = loadFromFile("/etc/ulhw/store.json");
+	storeData = loadFromFile("/run/user/1000/store.json");
 	if (storeData.size() == 0) {
 		gWarn("No settings found, loading defaults");
 		storeData = createDefaults();
-		saveToFile("/etc/ulhw/store.json", storeData);
+		saveToFile("/run/user/1000/store.json", storeData);
 	}
 }
 
 UlakDataStore::~UlakDataStore()
 {
-	saveToFile("/etc/ulhw/store.json", storeData);
+	saveToFile("/run/user/1000/store.json", storeData);
 }
 
 std::vector<std::string> UlakDataStore::keys()

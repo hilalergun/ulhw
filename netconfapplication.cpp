@@ -26,7 +26,7 @@ static inline int load_hostkey(const char *name, void *, char **privkey_path, ch
 {
 	gLog("hostkey load request");
 	if (std::string(name) == "key_rsa") {
-		*privkey_path = strdup("/etc/ulhw/id_rsa");
+		*privkey_path = strdup("/run/user/1000/id_rsa");
 		return 0;
 	}
 	return -ENOENT;
@@ -109,7 +109,7 @@ int NetconfApplication::initServer()
 	auto ietfnc = ly_ctx_load_module(p->ctx, "ietf-netconf", nullptr);
 	ly_ctx_load_module(p->ctx, "ietf-netconf-monitoring", nullptr);
 	ly_ctx_load_module(p->ctx, "ietf-netconf-with-defaults", nullptr);
-	p->m = lys_parse_path(p->ctx, "/etc/ulhw/netas.yang"
+	p->m = lys_parse_path(p->ctx, "/run/user/1000/netas.yang"
 										  , LYS_IN_YANG);
 	if (!p->m)
 		return -EINVAL;
@@ -152,7 +152,7 @@ int NetconfApplication::initClient(int argc, char *argv[])
 	const lys_module *ietfnc = ly_ctx_load_module(ctx, "ietf-netconf", nullptr);
 	ly_ctx_load_module(ctx, "ietf-netconf-monitoring", nullptr);
 	ly_ctx_load_module(ctx, "ietf-netconf-with-defaults", nullptr);
-	auto *m = lys_parse_path(ctx, "/etc/ulhw/netas.yang"
+	auto *m = lys_parse_path(ctx, "/run/user/1000/netas.yang"
 										  , LYS_IN_YANG);
 	if (!m)
 		return -EINVAL;
