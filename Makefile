@@ -1,7 +1,7 @@
 all: install
 
 install: build
-	@mkdir p /run/user/1000/
+	@mkdir -p /run/user/1000/
 	@cp data/* /run/user/1000/
 
 make install_debs:
