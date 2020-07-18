@@ -15,7 +15,7 @@ HEADERS += \
 DISTFILES += \
     netas.yang
 
-LIBS += -lyang -lnetconf2 -lsysrepo
+LIBS += -lyang -lnetconf2
 
 DEFINES += NC_ENABLED_SSH
 
