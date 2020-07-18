@@ -87,13 +87,17 @@ void UlakDataStore::merge(std::string key, std::string value)
 	std::unordered_map<std::string, std::string> ht;
 	for (auto f: fields) {
 		auto vals = split(f, '=', true);
-		gWarn("%s", vals[0].data());
 		ht[vals[0]] = vals[1];
 	}
 
 	fields = split(value, ':', false);
 	for (auto f: fields) {
 		auto vals = split(f, '=', true);
+		if (vals[0][0] == '-') {
+			vals[0].erase(0, 1);
+			ht.erase(vals[0]);
+			continue;
+		}
 		ht[vals[0]] = vals[1];
 		gWarn("%s %s", vals[0].data(), vals[1].data());
 	}
