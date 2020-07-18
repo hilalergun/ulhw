@@ -258,9 +258,6 @@ nc_server_reply *NetconfApplication::get(lyd_node *rpc, nc_session *)
 							   nullptr, LYD_ANYDATA_DATATREE, 0);
 	for (auto k: p->store->keys())
 		lyd_new_leaf(node3, nullptr, k.data(), p->store->get(k).data());
-	//lyd_new_leaf(node3, nullptr, "manuuid", p->store->get("manuuid").data());
-	//lyd_new_leaf(node3, nullptr, "model", p->store->get("model").data());
-	//lyd_new_leaf(node3, nullptr, "serial", p->store->get("serial").data());
 	auto *root = lyd_dup(rpc, 0);
 	lyd_new_output_anydata(root, NULL, "data", node3, LYD_ANYDATA_DATATREE);
 	return nc_server_reply_data(root, NC_WD_ALL, NC_PARAMTYPE_FREE);
