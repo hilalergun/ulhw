@@ -223,7 +223,12 @@ int NetconfApplication::initClient(int argc, char *argv[])
 		return -EINVAL;
 	}
 	nc_reply_data *ncrd = (nc_reply_data *)reply;
-	dumpNode(ncrd->data);
+	auto node = ncrd->data->child;
+	while (node) {
+		lyd_node_anydata *any = (lyd_node_anydata *)node;
+		printf("%s: %s\n", node->schema->name, any->value.str);
+		node = node->next;
+	}
 	return 0;
 }
 
