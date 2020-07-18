@@ -51,7 +51,7 @@ UlakDataStore::UlakDataStore()
 
 UlakDataStore::~UlakDataStore()
 {
-	saveToFile("/run/user/1000/store.json", storeData);
+	sync();
 }
 
 std::vector<std::string> UlakDataStore::keys()
@@ -74,6 +74,11 @@ void UlakDataStore::set(std::string key, std::string value)
 	auto j = json::parse(storeData);
 	j[key] = value;
 	storeData = j.dump();
+}
+
+void UlakDataStore::sync()
+{
+	saveToFile("/run/user/1000/store.json", storeData);
 }
 
 std::string UlakDataStore::createDefaults()
