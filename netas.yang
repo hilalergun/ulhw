@@ -1,0 +1,19 @@
+module netas {
+    namespace "urn:coding_challenge";
+    prefix cc;
+
+    container device {
+        leaf manufacturer {
+            type string;
+        }
+        leaf manuuid {
+            type string;
+        }
+        leaf model {
+            type string;
+        }
+        leaf serial {
+            type string;
+        }
+    }
+}
