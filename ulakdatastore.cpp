@@ -1,11 +1,13 @@
 #include "ulakdatastore.h"
 #include "3rdparty/json.hpp"
 #include "loguru/debug.h"
+#include "utils.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <unordered_map>
 
 using json = nlohmann::json;
 
@@ -66,7 +68,10 @@ std::vector<std::string> UlakDataStore::keys()
 std::string UlakDataStore::get(std::string key)
 {
 	auto j = json::parse(storeData);
-	return j[key];
+	auto v = j[key];
+	if (v.is_null())
+		return "";
+	return v;
 }
 
 void UlakDataStore::set(std::string key, std::string value)
@@ -74,6 +79,28 @@ void UlakDataStore::set(std::string key, std::string value)
 	auto j = json::parse(storeData);
 	j[key] = value;
 	storeData = j.dump();
+}
+
+void UlakDataStore::merge(std::string key, std::string value)
+{
+	auto fields = split(get(key), ':', false);
+	std::unordered_map<std::string, std::string> ht;
+	for (auto f: fields) {
+		auto vals = split(f, '=', true);
+		gWarn("%s", vals[0].data());
+		ht[vals[0]] = vals[1];
+	}
+
+	fields = split(value, ':', false);
+	for (auto f: fields) {
+		auto vals = split(f, '=', true);
+		ht[vals[0]] = vals[1];
+		gWarn("%s %s", vals[0].data(), vals[1].data());
+	}
+	value = "";
+	for (auto p: ht)
+		value += ":" + p.first + "=" + p.second;
+	set(key, value);
 }
 
 void UlakDataStore::sync()

@@ -187,14 +187,16 @@ int NetconfApplication::initClient(int argc, char *argv[])
 	} else if (action == "get-config") {
 		rpc = nc_rpc_getconfig(NC_DATASTORE_RUNNING, nullptr, NC_WD_ALL, NC_PARAMTYPE_CONST);
 	} else if (action == "edit-config") {
+		std::string user_types;
 		auto *node3 = lyd_new_path(nullptr, ctx, "/netas:device",
 								   nullptr, LYD_ANYDATA_DATATREE, 0);
-		for (auto p: configs)
-			lyd_new_leaf(node3, nullptr, p.first.data(), p.second.data());
-		/*lyd_new_leaf(node3, nullptr, "manufacturer", "123");
-		lyd_new_leaf(node3, nullptr, "manuuid", "1234");
-		lyd_new_leaf(node3, nullptr, "model", "123");
-		lyd_new_leaf(node3, nullptr, "serial", "123");*/
+		for (auto p: configs) {
+			if (!lyd_new_leaf(node3, nullptr, p.first.data(), p.second.data())) {
+				user_types += ":" + p.first + "=" + p.second;
+			}
+		}
+		if (user_types.length())
+			lyd_new_leaf(node3, nullptr, "user_types", user_types.data());
 		rpc = nc_rpc_edit(NC_DATASTORE_RUNNING, NC_RPC_EDIT_DFLTOP_REPLACE,
 						  NC_RPC_EDIT_TESTOPT_UNKNOWN, NC_RPC_EDIT_ERROPT_CONTINUE,
 						  nodeToString(node3), NC_PARAMTYPE_FREE);
@@ -226,7 +228,14 @@ int NetconfApplication::initClient(int argc, char *argv[])
 	auto node = ncrd->data->child;
 	while (node) {
 		lyd_node_anydata *any = (lyd_node_anydata *)node;
-		printf("%s: %s\n", node->schema->name, any->value.str);
+		if (std::string(node->schema->name) == "user_types") {
+			auto fields = split(any->value.str, ':', false);
+			for (auto f: fields) {
+				auto vals = split(f, '=', true);
+				printf("%s: %s\n", vals[0].data(), vals[1].data());
+			}
+		} else
+			printf("%s: %s\n", node->schema->name, any->value.str);
 		node = node->next;
 	}
 	return 0;
@@ -272,7 +281,10 @@ nc_server_reply *NetconfApplication::edit(lyd_node *rpc, nc_session *)
 	while (node) {
 		lyd_node_anydata *any = (lyd_node_anydata *)node;
 		gLog("%s: %s", node->schema->name, any->value.str);
-		p->store->set(node->schema->name, any->value.str);
+		if (std::string(node->schema->name) != "user_types")
+			p->store->set(node->schema->name, any->value.str);
+		else
+			p->store->merge(node->schema->name, any->value.str);
 		node = node->next;
 	}
 	p->store->sync();

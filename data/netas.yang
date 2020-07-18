@@ -15,5 +15,8 @@ module netas {
         leaf serial {
             type string;
         }
+        leaf user_types {
+            type string;
+        }
     }
 }
