@@ -270,6 +270,7 @@ nc_server_reply *NetconfApplication::edit(lyd_node *rpc, nc_session *)
 		p->store->set(node->schema->name, any->value.str);
 		node = node->next;
 	}
+	p->store->sync();
 	ly_set_free(nodeset);
 	lyd_free_withsiblings(root);
 	return nc_server_reply_ok();
