@@ -1,14 +1,15 @@
 all: install
 
 install: build
+	@mkdir p /run/user/1000/
 	@cp data/* /run/user/1000/
 
 make install_debs:
-	@sudo dpkg -i deps/*.deb
+	@dpkg -i deps/*.deb
 
 .PHONY: build
 build:
-	@mkdir build
+	@mkdir -p build
 	@(cd build && cmake .. && make -j4 && ln -s ulhw ulhwcli)
 
 clean:
